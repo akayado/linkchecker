@@ -1,0 +1,127 @@
+var LC = LC || {};
+(function(LC){
+	LC.checkStart= function(url, opt){
+		opt = opt || {};
+		opt.debug = opt.debug || false;
+		opt.maxLevel = opt.maxLevel || 0;
+
+		if(opt.debug){
+			console.log("Check begins from: "+url);
+			console.log("Options", opt);
+		}
+
+		waiting.push({from: null,
+									to: url,
+									level: 0,
+									state: "waiting",
+									result: null});
+		check(opt);
+	}
+
+	LC.checklist= [];
+	var waiting= [];
+	var check= function(opt){
+		if(waiting.length==0)return;
+
+		var item = waiting.shift();
+
+		if(noCheckNeeded(item)){
+			item.state = "depending";
+			item.result = pastResultOf(item);
+			LC.checklist.push(item);
+			if(opt.callback)opt.callback(item);
+			alert();
+			return;
+		}
+
+		item.state = "checking";
+		LC.checklist.push(item);
+		if(opt.debug)console.log("Getting "+item.to);
+
+		jqxhr = $.ajax("./urlgetter.php?url="+item.to)
+			.done(function(data){
+				if(opt.debug)console.log("Success: "+item.to);
+
+				var jsonstr = data.split("<!--JSON-END-->")[0];
+				var htmlstr = _.rest(data.split("<!--JSON-END-->")).join("<!--JSON-END-->");
+				var header = JSON.parse(jsonstr);
+				item.result = getResultNumber(header);
+				if(opt.debug)console.log("Result: "+item.result);
+
+				item.state = "success";
+
+				if(opt.callback)opt.callback(item);
+
+				if(item.result=="200"){
+					var p = $.parseHTML(htmlstr);
+					var base = $("base", p).attr("href") || "";
+					$("a", p).filter(function(){
+						return item.from==null || base+this.href != item.from.split("#")[0];
+					}).each(function(i,e){
+						console.log("Link found: "+e.href);
+						if(item.level+1<=opt.maxLevel){
+							waiting.push({from: item.to,
+														to: base + e.href,
+														level: item.level+1,
+														state: "waiting",
+														result: null});
+							check(opt);
+						}
+					});
+				}
+			}).fail(function(){
+				item.state = "failure";
+				if(opt.debug)console.log("Failure: "+item.to);
+				if(opt.callback)opt.callback();
+			}).always(function(){
+			});
+	}
+
+	var noCheckNeeded = function(item){
+		LC.checklist.filter(function(i){
+			if(i.to == item.to)return true;
+		});
+		return false;
+	}
+
+	var pastResultOf = function(item){
+		LC.checklist.filter(function(i){
+			if(i.to == item.to)return i.result;
+		});
+		return null;
+	}
+
+	var getResultNumber = function(header_json){
+		var tmp = header_json[_.findIndex(header_json, function(str){
+			return str.search(/^HTTP/)!=-1;
+		})];
+		if(tmp.search(/200/)!=-1){
+			return "200";
+		}else if(tmp.search(/404/)!=-1){
+			return "404";
+		}else if(tmp.search(/403/)!=-1){
+			return "403";
+		}else if(tmp.search(/400/)!=-1){
+			return "400";
+		}else if(tmp.search(/401/)!=-1){
+			return "401";
+		}else if(tmp.search(/500/)!=-1){
+			return "500";
+		}else if(tmp.search(/503/)!=-1){
+			return "503";
+		}else{
+			return "unknown";
+		}
+	}
+})(LC);
+
+$(document).ready(function(){
+	$("#check-url").keypress(function(e){
+		if(e.which == 13){
+			LC.checkStart($("#check-url").val(), {debug: true, maxLevel: 2, callback: function(item){
+				console.log(item);
+				$("#results").append("<p>"+item.from+" → "+item.to+" : "+item.result+"</p>");
+			}});
+		}
+	});
+});

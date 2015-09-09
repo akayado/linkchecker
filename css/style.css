@@ -1,0 +1,116 @@
+h1 {
+	font-family: 'Architects Daughter', cursive;
+	text-align: center;
+}
+
+.hidden {
+	display: none;
+}
+
+.wrapper, .small-wrapper{
+	margin: 0 auto;
+}
+
+.wrapper {
+	max-width: 960px;
+	margin: 0 auto;
+}
+
+.small-wrapper {
+	max-width: 480px;
+	margin: 0 auto;
+}
+
+.clearboth {
+	clear: both;
+}
+
+p.notice {
+	color: #ff0000;
+	font-size: 80%;
+}
+
+p.explanation {
+	font-size: 80%;
+}
+
+.align-right {
+	text-align: right;
+}
+.align-center {
+	text-align: center;
+}
+
+.inputgroup {
+	margin-bottom: 40px;
+	padding: 20px;
+	background: #f0f0f0;
+	overflow: hidden;
+}
+
+.inputgroup h2 {
+	font-size: 100%;
+	margin: 10px;
+	text-align: center;
+}
+
+.inputgroup hr {
+	width: 50%;
+	border: solid 1px #aaaaaa;
+	margin: 15px auto;
+}
+
+#lcform #start-url {
+	width: 100%;
+	float: right;
+	margin-bottom: 10px;
+}
+
+#startbtn {
+	-webkit-border-radius: 28;
+	-moz-border-radius: 28;
+	border-radius: 28px;
+	color: #000000;
+	font-size: 20px;
+	background: #cfe7f7;
+	padding: 10px 20px 10px 20px;
+	text-decoration: none;
+	border: none;
+	width: 75%;
+	font-family: 'Architects Daughter', cursive;
+	font-size: 150%;
+}
+
+#startbtn:hover {
+	color: #ffffff;
+	background: #3cb0fd;
+	text-decoration: none;
+}
+
+
+
+#result-table-outer, #summary-outer {
+	max-height: 500px;
+	overflow-y: scroll;
+}
+#result-table, #summary {
+	width: 100%;
+	max-width: 100%;
+}
+#result-table th, #summary th{
+	background: #cccccc;
+}
+#result-table td, #summary td {
+	background: #f0f0f0;
+	word-break: break-all;
+}
+#result-table tr.red {
+	color: #ff0000;
+}
+#result-table tr:hover td, #summary tr:hover td {
+	background: #e0e0e0;
+}
+
+hr.bottom {
+	margin: 40px auto;
+}

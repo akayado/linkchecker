@@ -79,6 +79,7 @@ p.explanation {
 	width: 75%;
 	font-family: 'Architects Daughter', cursive;
 	font-size: 150%;
+	cursor: pointer;
 }
 
 #startbtn:hover {

@@ -192,7 +192,7 @@ var LC = LC || {};
 	var fullUrl = function(from, base, to){
 		var url = from + to;
 		if(to.indexOf("/")==0){
-			url = from.replace(/^((http|https):\/\/[^\/]*)\/*$/, "$1") + to;
+			url = from.replace(/^((http|https):\/\/[^\/]*)\/.*$/, "$1") + to;
 		}else if((new RegExp("^(http|https)://")).test(to)){
 			url = to;
 		}else if(base!=null&&base!=void(0)&&base.length>0){

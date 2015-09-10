@@ -134,10 +134,10 @@ var LC = LC || {};
 							item.linkstr = e.href;
 							item.basestr = base;
 
-							item.linkstr = item.linkstr.replace(/^(http|https):\/\/localhost\//, "/");
+							item.linkstr = item.linkstr.replace(new RegExp("^(http|https)://"+document.domain+"/"), "/");
 
 							//Get full url
-							var url = fullUrl(item.to, base, item.linkstr);
+							var url = fullUrl(item.to, item.basestr, item.linkstr);
 
 							if(!nodeExists(url)){
 								LC.nodes.push({url: url, state: "waiting"});

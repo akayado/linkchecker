@@ -113,7 +113,7 @@ var LC = LC || {};
 				if(item.result=="200"){
 					getNode(item.to).state = "found";
 
-					var p = $.parseHTML(htmlstr);
+					var p = (new DOMParser()).parseFromString(htmlstr, "text/html");
 					var base = $("base", p).attr("href") || item.to.replace(new RegExp("/[^/]*$"), "/");
 					var tags = opt.tags;
 					var selector = tags.join(",");
@@ -125,16 +125,19 @@ var LC = LC || {};
 							}else return true;
 						}).each(function(i,e){
 							if($(e).is("object")){
-								e.href = e.data || $("param[name=movie]", e).attr("value");
+								item.linkstr = $(e).attr("data");
+								if(item.linkstr==""||!item.linkstr){
+									item.linkstr = $("param[name=movie]", e).attr("value");
+								}
+							}else{
+								if(!e.href||e.href==""||e.href==void(0)||e.href==null)item.linkstr = $(e).attr("src");
+								else item.linkstr = $(e).attr("href");
 							}
 
+							if(item.linkstr == void(0))return;			//some <a> tags lack href attribute.
 
-							if(!e.href||e.href==""||e.href==void(0)||e.href==null)e.href = e.src;
-							log("\tLink found: "+e.href);
-							item.linkstr = e.href;
+							log("\tLink found: "+item.linkstr);
 							item.basestr = base;
-
-							item.linkstr = item.linkstr.replace(new RegExp("^(http|https)://"+document.domain+"/"), "/");
 
 							//Get full url
 							var url = fullUrl(item.to, item.basestr, item.linkstr);

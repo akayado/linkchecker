@@ -1,3 +1,7 @@
+<?php
+$clean = true;
+require_once "out.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -6,15 +10,18 @@
 		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<?php if(!$already_in): ?>
 		<script src="js/checker.js"></script>
 		<script src="js/view.js"></script>
+<?php endif; ?>
 		<link href='http://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
 		<link href='css/style.css' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
 		<div class="wrapper">
-			<h1>Link Checker</h1>
+			<h1><a href="http://www.akayado.com/linkchecker/">Link Checker</a></h1>
 
+<?php if(!$already_in): ?>
 			<form id="lcform" class="small-wrapper">
 				<div class="inputgroup">
 					<header><h2>URL to check</h2></header>
@@ -64,6 +71,12 @@
 					<button type="button" id="startbtn">Start</button>
 				</div>
 			</form>
+<?php else: ?>
+<div class="align-center">
+	<p>Sorry, try again a few seconds later.</p>
+	<p><a href="javascript:location.reload();">Reload</a></p>
+</div>
+<?php endif; ?>
 
 			<div id="lcresults" class="hidden">
 				<h2>Summary</h2>
@@ -79,6 +92,9 @@
 						<thead><tr><th width="45%">Link source</th><th width="5%">→</th><th width="45%">Link target</th><th width="5%">Status</th></tr></thead>
 						<tbody></tbody>
 					</table>
+				</div>
+				<div id="returnlnk">
+					<a href="javascript:location.reload();">Return to the beginning</a>
 				</div>
 
 

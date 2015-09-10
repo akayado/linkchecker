@@ -2,7 +2,7 @@ var LC = LC || {};
 (function(LC){
 
 	LC.urlgetter_path = "./urlgetter.php";
-	LC.webmode = true;
+	LC.webmode = !(typeof process !== "undefined" && typeof require !== "undefined");
 
 	LC.nodes = [];
 	var nodeExists = function(url){
@@ -27,7 +27,7 @@ var LC = LC || {};
 	LC.checkStart= function(url, opt){
 		opt = opt || {};
 		opt.debug = opt.debug || false;
-		opt.maxLevel = opt.maxLevel || 0;
+		opt.maxLevel = opt.maxLevel || 2;
 		opt.onlyDomain = opt.onlyDomain || false;
 		initialDomain = getDomainOf(url);
 		opt.tags = opt.tags || ["a"];

@@ -2,6 +2,10 @@ h1 {
 	font-family: 'Architects Daughter', cursive;
 	text-align: center;
 }
+h1 a {
+	color: black;
+	text-decoration: none;
+}
 
 .hidden {
 	display: none;
@@ -114,4 +118,8 @@ p.explanation {
 
 hr.bottom {
 	margin: 40px auto;
+}
+
+#returnlnk {
+	margin-top: 40px;
 }

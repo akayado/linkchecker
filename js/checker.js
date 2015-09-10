@@ -63,7 +63,7 @@ var LC = LC || {};
 			logs[item.id] += str+"\n";
 		}
 		function printlog(item){
-			console.log(logs[item.id]);
+			//console.log(logs[item.id]);
 		}
 
 		while(item = LC.waiting.shift()){
@@ -127,13 +127,17 @@ var LC = LC || {};
 							if($(e).is("object")){
 								e.href = e.data || $("param[name=movie]", e).attr("value");
 							}
-							e.href = e.href || e.src;
+
+
+							if(!e.href||e.href==""||e.href==void(0)||e.href==null)e.href = e.src;
 							log("\tLink found: "+e.href);
 							item.linkstr = e.href;
 							item.basestr = base;
-							
+
+							item.linkstr = item.linkstr.replace(/^(http|https):\/\/localhost\//, "/");
+
 							//Get full url
-							var url = fullUrl(item.to, base, e.href);
+							var url = fullUrl(item.to, base, item.linkstr);
 
 							if(!nodeExists(url)){
 								LC.nodes.push({url: url, state: "waiting"});
@@ -183,13 +187,15 @@ var LC = LC || {};
 	}
 
 	var fullUrl = function(from, base, to){
-		var url;
+		var url = from + to;
 		if(to.indexOf("/")==0){
-			url = from.replace(/^((http|https):\/\/[^\/]*)\/.*$/, "$1") + to;
+			url = from.replace(/^((http|https):\/\/[^\/]*)\/*$/, "$1") + to;
 		}else if((new RegExp("^(http|https)://")).test(to)){
 			url = to;
-		}else{
+		}else if(base!=null&&base!=void(0)&&base.length>0){
 			url	= base + to;
+		}else{
+			url = from + to;
 		}
 		return url;
 	}
@@ -252,8 +258,9 @@ var LC = LC || {};
 	}
 
 	var getDomainOf = function(a){
-		a = a.replace(/^(http|https):\/\//, "");
-		a = a.split("/")[0];
-		return a;
+		var b;
+		b = a.replace(/^(http|https):\/\//, "");
+		b = b.split("/")[0];
+		return b;
 	}
 })(LC);

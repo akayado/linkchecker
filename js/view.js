@@ -1,5 +1,7 @@
 $(document).ready(function(){
 
+	var interval;
+
 	$("#chk-all").click(function(){
 		$("#tags-to-check main input").prop("checked", true);
 	});
@@ -12,6 +14,17 @@ $(document).ready(function(){
 		if($(this).html()=="Show")$(this).html("Hide");
 		else $(this).html("Show");
 		$("#advanced main").toggle(300);
+	});
+
+	$("#returnlnk a").click(function(){
+		var tick = function(t){
+			$("#reloadtimer").html($("#reloadtimer").html()+".");
+			if(t%8==0)$("#reloadtimer").html("");
+			if(t<200)setTimeout(function(){tick(t+1);}, 100);
+		}
+		tick(0);
+		setTimeout(function(){location.reload();}, 6000);
+		clearInterval(interval);
 	});
 
 	function updateInterface(){
@@ -40,7 +53,7 @@ $(document).ready(function(){
 
 		jqxhr = $.ajax("in.php").done(function(data){
 			if(data=="ok"){
-				setInterval(updateInTime, 5000);
+				interval = setInterval(updateInTime, 5000);
 
 				$("#lcform > *").hide(300);
 				$("#lcresults").show(300);

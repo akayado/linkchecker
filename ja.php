@@ -82,14 +82,14 @@ require_once "out.php";
 <?php endif; ?>
 
 			<div id="lcresults" class="hidden">
-				<h2>Summary</h2>
+				<h2>リンク切れ</h2>
 				<div id="summary-outer">
 					<table id="summary">
 						<thead><tr><th width="50%">Missing document</th><th width="50%">Link found at</th></thead>
 						<tbody></tbody>
 					</table>
 				</div>
-				<h2>All Results</h2>
+				<h2>全ての結果</h2>
 				<div id="result-table-outer">
 					<table id="result-table" class="clearboth">
 						<thead><tr><th width="45%">Link source</th><th width="5%">→</th><th width="45%">Link target</th><th width="5%">Status</th></tr></thead>
@@ -97,7 +97,7 @@ require_once "out.php";
 					</table>
 				</div>
 				<div id="returnlnk">
-					<a href="javascript:location.reload();">Return to the beginning</a>
+					<a href="javascript:void(0);">最初の画面に戻る</a><span id="reloadtimer"></span>
 				</div>
 
 

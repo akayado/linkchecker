@@ -97,7 +97,7 @@ require_once "out.php";
 					</table>
 				</div>
 				<div id="returnlnk">
-					<a href="javascript:location.reload();">Return to the beginning</a>
+					<a href="javascript:void(0);">Return to the beginning</a><span id="reloadtimer"></span>
 				</div>
 
 

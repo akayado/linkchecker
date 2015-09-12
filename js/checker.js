@@ -1,6 +1,8 @@
 var LC = LC || {};
 (function(LC){
 
+	var $ = jQuery;
+
 	LC.urlgetter_path = "./urlgetter.php";
 	LC.webmode = !(typeof process !== "undefined" && typeof require !== "undefined");
 
@@ -72,7 +74,7 @@ var LC = LC || {};
 			logs[item.id] += str+"\n";
 		}
 		function printlog(item){
-			//console.log(logs[item.id]);
+			console.log(logs[item.id]);
 		}
 
 		while(item = LC.waiting.shift()){
@@ -90,7 +92,7 @@ var LC = LC || {};
 				log(item, "\tNo check needed for "+item.to);
 				log(item, "\tChecked "+item.id);
 
-				item.result = pastResult;
+				item.result = pastResultOf(item);
 				item.state = "checked";
 				printlog(item);
 
@@ -235,13 +237,18 @@ var LC = LC || {};
 		}
 	}
 
-	//Gets the past result of an item so that we don't need to get the page all over again.
-	var pastResultOf = function(item){
-		var result = null;
-		LC.checklist.forEach(function(i){
-			if(i.id != item.id && i.to == item.to)result = result || i.result;
+	var noCheckNeeded = function(item){
+		LC.checklist.filter(function(i){
+			if(i.to == item.to && i.id != item.id)return true;
 		});
-		return result;
+		return false;
+	}
+
+	var pastResultOf = function(item){
+		LC.checklist.filter(function(i){
+			if(i.to == item.to)return i.result;
+		});
+		return null;
 	}
 
 	var getStatusCode = function(header_json){

@@ -76,11 +76,13 @@ var LC = LC || {};
 			log(item, "Checking item id "+item.id);
 			LC.checklist.push(item);
 
-			if(noCheckNeeded(item)){
+			var pastResult = null;
+			if(pastResult = pastResultOf(item)){
+				console.log("no check needed	!");
 				log(item, "\tNo check needed for "+item.to);
 				log(item, "\tChecked "+item.id);
 
-				item.result = pastResultOf(item);
+				item.result = pastResult;
 				item.state = "checked";
 				printlog(item);
 
@@ -221,18 +223,13 @@ var LC = LC || {};
 		}
 	}
 
-	var noCheckNeeded = function(item){
-		LC.checklist.filter(function(i){
-			if(i.to == item.to && i.id != item.id)return true;
-		});
-		return false;
-	}
-
+	//Gets the past result of an item so that we don't need to get the page all over again.
 	var pastResultOf = function(item){
-		LC.checklist.filter(function(i){
-			if(i.to == item.to)return i.result;
+		var result = null;
+		LC.checklist.forEach(function(i){
+			if(i.id != item.id && i.to == item.to)result = result || i.result;
 		});
-		return null;
+		return result;
 	}
 
 	var getStatusCode = function(header_json){

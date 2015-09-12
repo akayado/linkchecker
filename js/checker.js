@@ -4,12 +4,21 @@ var LC = LC || {};
 	LC.urlgetter_path = "./urlgetter.php";
 	LC.webmode = !(typeof process !== "undefined" && typeof require !== "undefined");
 
+	if(!LC.webmode){
+		var http = require('http');
+		var __ = require('underscore');
+		var $ = require('jquery');
+		var jsdom = require('jsdom');
+	}else{
+		var __ = _;
+	}
+
 	LC.nodes = [];
 	var nodeExists = function(url){
-		return _.findIndex(LC.nodes, function(i){return i.url == url})!=-1;
+		return __.findIndex(LC.nodes, function(i){return i.url == url})!=-1;
 	}
 	var getNode = function(url){
-		return LC.nodes[_.findIndex(LC.nodes, function(i){return i.url == url})];
+		return LC.nodes[__.findIndex(LC.nodes, function(i){return i.url == url})];
 	}
 
 	LC.links = [];
@@ -78,7 +87,6 @@ var LC = LC || {};
 
 			var pastResult = null;
 			if(pastResult = pastResultOf(item)){
-				console.log("no check needed	!");
 				log(item, "\tNo check needed for "+item.to);
 				log(item, "\tChecked "+item.id);
 
@@ -105,7 +113,7 @@ var LC = LC || {};
 				}
 
 				var jsonstr = data.split("<!--JSON-END-->")[0];
-				var htmlstr = _.rest(data.split("<!--JSON-END-->")).join("<!--JSON-END-->");
+				var htmlstr = __.rest(data.split("<!--JSON-END-->")).join("<!--JSON-END-->");
 				var header = JSON.parse(jsonstr);
 				item.result = getStatusCode(header);
 				log(item, "\nStatus code: "+item.result);
@@ -115,7 +123,11 @@ var LC = LC || {};
 				if(item.result=="200"){
 					getNode(item.to).state = "found";
 
-					var p = (new DOMParser()).parseFromString(htmlstr, "text/html");
+					if(LC.webmode){
+						var p = (new DOMParser()).parseFromString(htmlstr, "text/html");
+					}else{
+						var p = jsdom.jsdom(htmlstr, null, {FetchExtraResources: false, ProcessExternalResources: false, MutationEvents: false, QuerySelector: false}).createWindow();
+					}
 					var base = $("base", p).attr("href") || item.to.replace(new RegExp("/[^/]*$"), "/");
 					var tags = opt.tags;
 					var selector = tags.join(",");
@@ -206,7 +218,7 @@ var LC = LC || {};
 	}
 
 	var getRedirectLocation = function(header){
-		return header[_.findIndex(header, function(i){
+		return header[__.findIndex(header, function(i){
 			return /Location:/.test(i);
 		})].replace(/Location[ \t]*:[ \t]*/, "");
 	}
@@ -233,7 +245,7 @@ var LC = LC || {};
 	}
 
 	var getStatusCode = function(header_json){
-		var tmp = header_json[_.findIndex(header_json, function(str){
+		var tmp = header_json[__.findIndex(header_json, function(str){
 			return str.search(/^HTTP/)!=-1;
 		})];
 		if(tmp.search(/200/)!=-1){

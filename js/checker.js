@@ -1,7 +1,6 @@
 var LC = LC || {};
 (function(LC){
 
-	var $ = jQuery;
 
 	LC.urlgetter_path = "./urlgetter.php";
 	LC.webmode = !(typeof process !== "undefined" && typeof require !== "undefined");
@@ -9,10 +8,10 @@ var LC = LC || {};
 	if(!LC.webmode){
 		var http = require('http');
 		var __ = require('underscore');
-		var $ = require('jquery');
 		var jsdom = require('jsdom');
 	}else{
 		var __ = _;
+		var $ = jQuery;
 	}
 
 	LC.nodes = [];
@@ -103,7 +102,7 @@ var LC = LC || {};
 
 			log(item, "\tGetting "+item.to+" ...");
 			
-			get(item, function(data, message, item){
+			get(item, function(data, message, item, _statuscode, _header){
 				item.state = "success";
 				log(item, "\t"+message);
 
@@ -114,10 +113,16 @@ var LC = LC || {};
 					return;
 				}
 
-				var jsonstr = data.split("<!--JSON-END-->")[0];
-				var htmlstr = __.rest(data.split("<!--JSON-END-->")).join("<!--JSON-END-->");
-				var header = JSON.parse(jsonstr);
-				item.result = getStatusCode(header);
+				if(LC.webmode){
+					var jsonstr = data.split("<!--JSON-END-->")[0];
+					var htmlstr = __.rest(data.split("<!--JSON-END-->")).join("<!--JSON-END-->");
+					var header = JSON.parse(jsonstr);
+					item.result = getStatusCode(header);
+				}else{
+					var htmlstr = data;
+					var header = _header;
+					item.result = _statuscode;
+				}
 				log(item, "\nStatus code: "+item.result);
 
 				if(opt.callback)opt.callback(item);
@@ -128,7 +133,8 @@ var LC = LC || {};
 					if(LC.webmode){
 						var p = (new DOMParser()).parseFromString(htmlstr, "text/html");
 					}else{
-						var p = jsdom.jsdom(htmlstr, null, {FetchExtraResources: false, ProcessExternalResources: false, MutationEvents: false, QuerySelector: false}).createWindow();
+						var p = jsdom.jsdom(htmlstr, {features: {FetchExtraResources: false, ProcessExternalResources: false, MutationEvents: false, QuerySelector: false}}).defaultView;
+						var $ = require('jquery')(p);
 					}
 					var base = $("base", p).attr("href") || item.to.replace(new RegExp("/[^/]*$"), "/");
 					var tags = opt.tags;
@@ -234,6 +240,18 @@ var LC = LC || {};
 				funcfail("Ajax failure", this);
 			});
 		}else{
+			http.get(item.to, function(res){
+				var body = '';
+				res.setEncoding('utf8');
+				res.on('data', function(chunk){
+					body += chunk;
+				});
+				res.on('end', function(re){
+					funcdone(body, "HTTP GET Success", item, res.statusCode, res.headers);
+				});
+			}).on('error', function(e){
+				funcfail("HTTP Get Failure", item);
+			});
 		}
 	}
 
@@ -252,6 +270,7 @@ var LC = LC || {};
 	}
 
 	var getStatusCode = function(header_json){
+		console.log(header_json);
 		var tmp = header_json[__.findIndex(header_json, function(str){
 			return str.search(/^HTTP/)!=-1;
 		})];
@@ -283,3 +302,5 @@ var LC = LC || {};
 		return b;
 	}
 })(LC);
+
+if(!LC.webmode)module.exports = LC;

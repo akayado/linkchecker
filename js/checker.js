@@ -132,6 +132,7 @@ var LC = LC || {};
 
 					if(LC.webmode){
 						var p = (new DOMParser()).parseFromString(htmlstr, "text/html");
+						var $ = jQuery;
 					}else{
 						var p = jsdom.jsdom(htmlstr, {features: {FetchExtraResources: false, ProcessExternalResources: false, MutationEvents: false, QuerySelector: false}}).defaultView;
 						var $ = require('jquery')(p);
@@ -270,7 +271,6 @@ var LC = LC || {};
 	}
 
 	var getStatusCode = function(header_json){
-		console.log(header_json);
 		var tmp = header_json[__.findIndex(header_json, function(str){
 			return str.search(/^HTTP/)!=-1;
 		})];

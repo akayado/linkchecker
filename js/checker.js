@@ -256,18 +256,12 @@ var LC = LC || {};
 		}
 	}
 
-	var noCheckNeeded = function(item){
-		LC.checklist.filter(function(i){
-			if(i.to == item.to && i.id != item.id)return true;
-		});
-		return false;
-	}
-
 	var pastResultOf = function(item){
+		var res = null;
 		LC.checklist.filter(function(i){
-			if(i.to == item.to)return i.result;
+			if(i.to == item.to)res = i.result;
 		});
-		return null;
+		return res;
 	}
 
 	var getStatusCode = function(header_json){

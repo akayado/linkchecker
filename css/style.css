@@ -112,8 +112,14 @@ p.explanation {
 #result-table tr.red {
 	color: #ff0000;
 }
+#result-table tr.active td {
+	background: #ffe0e0;
+}
 #result-table tr:hover td, #summary tr:hover td {
 	background: #e0e0e0;
+}
+#result-table tr.active:hover td {
+	background: #ffe0e0;
 }
 
 hr.bottom {

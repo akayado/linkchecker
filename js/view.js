@@ -65,11 +65,20 @@ $(document).ready(function(){
 					if(item.result!="200"&&item.result!="redirect")trclass="red";
 					if(item.result=="redirect"&&reportRedirects)trclass="red";
 					
-					$("#result-table tbody").append('<tr class="'+trclass+'"><td>'+item.fromNode.url+'</td><td>→</td><td>'+item.toNode.url+'</td><td>'+item.result+'</td></tr>');
+					$("#result-table tbody").append('<tr id="r'+item.id+'" class="'+trclass+'"><td>'+item.fromNode.url+'</td><td class="align-center">→</td><td>'+item.toNode.url+'</td><td>'+item.result+'</td></tr>');
 
-					if(trclass=="red"){
+					if(trclass.match(/red/)){
 						$("#summary tbody").append('<tr><td>'+item.toNode.url+'</td><td>'+item.fromNode.url+'</td></tr>');
 					}
+
+					var past;
+					if((past = LC.checklist.filter(function(i){
+						return i.to == item.from && i.result == "redirect";
+					})).length>0){
+						var pitem = past[0];
+						$("#r"+pitem.id).html('<td>'+pitem.fromNode.url+'</td><td class="align-center">→</td><td>'+pitem.toNode.url+'</td><td><a href="#r'+item.id+'" onclick="activate('+item.id+','+pitem.id+');">'+pitem.result+'</a></td>');
+					}
+
 				}});
 
 			}else{
@@ -85,3 +94,8 @@ $(document).ready(function(){
 
 });
 
+function activate(id1, id2){
+	$("#result-table tr").removeClass("active");
+	$("#r"+id1).addClass("active");
+	$("#r"+id2).addClass("active");
+}

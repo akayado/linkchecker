@@ -6,7 +6,7 @@ require_once "out.php";
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<title>Link Checker</title>
+		<title>Online Link Checker</title>
 		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
@@ -19,7 +19,7 @@ require_once "out.php";
 	</head>
 	<body>
 		<div class="wrapper">
-			<h1><a href="http://www.akayado.com/linkchecker/">Link Checker</a></h1>	
+			<h1><a href="http://www.akayado.com/linkchecker/">Online Link Checker</a></h1>	
 			<p class="align-center">
 				ENGLISH | <a href="ja.php">日本語</a>
 			</p>

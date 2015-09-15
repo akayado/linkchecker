@@ -7,8 +7,10 @@ var LC = LC || {};
 
 	if(!LC.webmode){
 		var http = require('http');
+		var https = require('https');
 		var __ = require('underscore');
 		var jsdom = require('jsdom');
+		var $ = null; //load jquery later.
 	}else{
 		var __ = _;
 		var $ = jQuery;
@@ -35,6 +37,11 @@ var LC = LC || {};
 
 	var initialDomain;
 	LC.checkStart= function(url, opt){
+		LC.nodes = [];
+		LC.links = [];
+		LC.waiting = [];
+		LC.checklist = [];
+
 		opt = opt || {};
 		opt.debug = opt.debug || false;
 		opt.maxLevel = opt.maxLevel || 2;
@@ -76,8 +83,9 @@ var LC = LC || {};
 			console.log(logs[item.id]);
 		}
 
-		while(item = LC.waiting.shift()){
-			if(item.level>opt.maxLevel)continue;
+		var item;
+		if(item = LC.waiting.shift()){
+			if(item.level>opt.maxLevel)return;
 
 			count++;
 			item.id = count;
@@ -91,13 +99,13 @@ var LC = LC || {};
 				log(item, "\tNo check needed for "+item.to);
 				log(item, "\tChecked "+item.id);
 
-				item.result = pastResultOf(item);
+				item.result = pastResult;
 				item.state = "checked";
 				printlog(item);
 
 				if(opt.callback)opt.callback(item);
 
-				continue;
+				return;
 			}
 
 			log(item, "\tGetting "+item.to+" ...");
@@ -132,17 +140,23 @@ var LC = LC || {};
 
 					if(LC.webmode){
 						var p = (new DOMParser()).parseFromString(htmlstr, "text/html");
-						var $ = jQuery;
+						if(!$)$ = jQuery;
 					}else{
 						var p = jsdom.jsdom(htmlstr, {features: {FetchExtraResources: false, ProcessExternalResources: false, MutationEvents: false, QuerySelector: false}}).defaultView;
-						var $ = require('jquery')(p);
+						if(!$)$ = require('jquery')(p);
 					}
 					var base = $("base", p).attr("href") || item.to.replace(new RegExp("/[^/]*$"), "/");
 					var tags = opt.tags;
 					var selector = tags.join(",");
 
 					if(item.level+1<=opt.maxLevel&&(!opt.onlyDomain||initialDomain==getDomainOf(item.to))){
-						$(selector, p).filter(function(){ 											//Filter external links
+						var q = null;
+						if(LC.webmode){
+							q = $(selector, p);
+						}else{
+							q = $(selector, p.document);
+						}
+						q.filter(function(){ 											//Filter external links
 							if(this.href){
 								return base+this.href != item.to.split("#")[0] && !this.href.match(/^(javascript|mailto):/);
 							}else return true;
@@ -203,6 +217,7 @@ var LC = LC || {};
 					getNode(item.to).state = "notfound";
 				}
 				if(opt.debug)printlog(item);
+
 				check(opt);
 			}, function(message, item){
 				item.state = "failure";
@@ -241,18 +256,33 @@ var LC = LC || {};
 				funcfail("Ajax failure", this);
 			});
 		}else{
-			http.get(item.to, function(res){
-				var body = '';
-				res.setEncoding('utf8');
-				res.on('data', function(chunk){
-					body += chunk;
+			if(item.to.match(/^https:/)){
+				https.get(item.to, function(res){
+					var body = '';
+					res.setEncoding('utf8');
+					res.on('data', function(chunk){
+						body += chunk;
+					});
+					res.on('end', function(re){
+						funcdone(body, "HTTP GET Success", item, res.statusCode, res.headers);
+					});
+				}).on('error', function(e){
+					funcfail("HTTP Get Failure", item);
 				});
-				res.on('end', function(re){
-					funcdone(body, "HTTP GET Success", item, res.statusCode, res.headers);
+			}else{
+				http.get(item.to, function(res){
+					var body = '';
+					res.setEncoding('utf8');
+					res.on('data', function(chunk){
+						body += chunk;
+					});
+					res.on('end', function(re){
+						funcdone(body, "HTTP GET Success", item, res.statusCode, res.headers);
+					});
+				}).on('error', function(e){
+					funcfail("HTTP Get Failure", item);
 				});
-			}).on('error', function(e){
-				funcfail("HTTP Get Failure", item);
-			});
+			}
 		}
 	}
 

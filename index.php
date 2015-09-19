@@ -33,8 +33,8 @@ require_once "out.php";
 					</main>
 				</div>
 
-				<div id="tags-to-check" class="inputgroup clearboth">
-					<header><h2>Tags to check</h2></header>
+				<div id="items-to-check" class="inputgroup clearboth">
+					<header><h2>Items to check</h2></header>
 					<main>
 						<label><input type="checkbox" id="chk-a" checked />&lt;a&gt;</label>
 						<label><input type="checkbox" id="chk-img" />&lt;img&gt;</label>
@@ -45,6 +45,8 @@ require_once "out.php";
 						<label><input type="checkbox" id="chk-embed" />&lt;embed&gt;</label>
 						<label><input type="checkbox" id="chk-video" />&lt;video&gt;</label>
 						<label><input type="checkbox" id="chk-audio" />&lt;audio&gt;</label>
+						<br />
+						<label><input type="checkbox" id="chk-stylesheets" />URLs in style sheets</label>
 					</main>
 					<div class="align-center">
 						<button type="button" id="chk-all">Check All</button>
@@ -105,5 +107,16 @@ require_once "out.php";
 		</div>
 		<hr class="bottom" />
 		<p>Copyright &copy; <a href="http://www.akayado.com/">akayado</a> All Rights Reserved.</p>
+
+	<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+				  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+					  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-54765878-3', 'auto');
+  ga('send', 'pageview');
+
+	</script>
 	</body>
 </html>

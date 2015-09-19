@@ -48,6 +48,7 @@ var LC = LC || {};
 		opt.onlyDomain = opt.onlyDomain || false;
 		initialDomain = getDomainOf(url);
 		opt.tags = opt.tags || ["a"];
+		opt.stylesheets = opt.stylesheets || false;
 
 		if(opt.debug){
 			console.log("Check begins from: "+url);
@@ -164,7 +165,7 @@ var LC = LC || {};
 							if($(e).is("object")){
 								item.linkstr = $(e).attr("data");
 								if(item.linkstr==""||!item.linkstr){
-									item.linkstr = $("param[name=movie]", e).attr("value");
+									item.linkstr = $('param[name="movie"]', e).attr("value");
 								}
 							}else{
 								if(!e.href||e.href==""||e.href==void(0)||e.href==null)item.linkstr = $(e).attr("src");
@@ -179,6 +180,7 @@ var LC = LC || {};
 							//Get full url
 							var url = fullUrl(item.to, item.basestr, item.linkstr);
 
+
 							if(!nodeExists(url)){
 								LC.nodes.push({url: url, state: "waiting"});
 							}
@@ -191,7 +193,43 @@ var LC = LC || {};
 														state: "waiting",
 														result: null});
 						});
+
+						if(opt.stylesheets){
+							//gather and parse style sheets.
+							var stylesheets = "";
+							if(item.toNode.url.match(/\.(css|css\?.*)$/)){
+								stylesheets += htmlstr;
+							}else{
+								$("[style]", p).each(function(i, e){
+									stylesheets += $(e).attr("style");
+								});
+								$("style", p).each(function(i, e){
+									stylesheets += $(e).html();
+								});
+							}
+							var matches = stylesheets.match(/(url\(|url\("|url\(')[^'")]+(\)|"\)|'\))/g);
+							if(matches!=null){
+								var i;
+								for(i=0;i<matches.length;i++){
+									var url = fullUrl(item.toNode.url, null, matches[i].match(/url\(["']?([^"']+)["']?\)/)[1]);
+									console.log(url);
+
+									if(!nodeExists(url)){
+										LC.nodes.push({url: url, state: "waiting"});
+									}
+
+									LC.waiting.push({from: item.to,
+																fromNode: item.toNode,
+																to: url,
+																toNode: getNode(url),
+																level: item.level+1,
+																state: "waiting",
+																result: null});
+								}
+							}
+						}
 					}
+
 				}else if(item.result=="redirect"){
 					getNode(item.to).state = "redirect";
 
@@ -236,7 +274,7 @@ var LC = LC || {};
 		}else if(base!=null&&base!=void(0)&&base.length>0){
 			url	= base + to;
 		}else{
-			url = from + to;
+			url = from.replace(/\/[^/]+$/, "/") + to;
 		}
 		return url;
 	}

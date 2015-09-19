@@ -3,10 +3,10 @@ $(document).ready(function(){
 	var interval;
 
 	$("#chk-all").click(function(){
-		$("#tags-to-check main input").prop("checked", true);
+		$("#items-to-check main input").prop("checked", true);
 	});
 	$("#unchk-all").click(function(){
-		$("#tags-to-check main input").prop("checked", false);
+		$("#items-to-check main input").prop("checked", false);
 	});
 
 	$("#advanced main").hide();
@@ -50,6 +50,9 @@ $(document).ready(function(){
 		if($("#chk-audio").is(':checked'))tags.push("audio");
 		if(tags==[])tags=["a"];
 
+		var stylesheets = false;
+		if($("#chk-stylesheets").is(':checked'))stylesheets=true;
+
 
 		jqxhr = $.ajax("in.php").done(function(data){
 			if(data=="ok"){
@@ -58,7 +61,7 @@ $(document).ready(function(){
 				$("#lcform > *").hide(300);
 				$("#lcresults").show(300);
 
-				LC.checkStart(url, {tags:tags, maxLevel:maxLevel, onlyDomain:onlyDomain, callback:function(item){
+				LC.checkStart(url, {stylesheets:stylesheets, tags:tags, maxLevel:maxLevel, onlyDomain:onlyDomain, callback:function(item){
 					if(item.fromNode==null)return;
 					var trclass = "";
 					var reportRedirects = $("#chk-report-redirects").is(':checked');

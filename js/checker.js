@@ -81,7 +81,9 @@ var LC = LC || {};
 			logs[item.id] += str+"\n";
 		}
 		function printlog(item){
-			console.log(logs[item.id]);
+			if(opt.debug){
+				console.log(logs[item.id]);
+			}
 		}
 
 		var item;
@@ -212,7 +214,6 @@ var LC = LC || {};
 								var i;
 								for(i=0;i<matches.length;i++){
 									var url = fullUrl(item.toNode.url, null, matches[i].match(/url\(["']?([^"']+)["']?\)/)[1]);
-									console.log(url);
 
 									if(!nodeExists(url)){
 										LC.nodes.push({url: url, state: "waiting"});
@@ -225,6 +226,7 @@ var LC = LC || {};
 																level: item.level+1,
 																state: "waiting",
 																result: null});
+									check(opt);
 								}
 							}
 						}
